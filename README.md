@@ -53,6 +53,45 @@ http://localhost:5173/?utm_source=zkgi-top-nav&utm_medium=top-nav&utm_campaign=C
 4. When the form is submitted, user data is combined with UTM parameters
 5. Complete submission data is stored in localStorage under `formSubmissions`
 
+### 🔗 UTM Persistence Demonstration
+
+**Key Feature**: UTM parameters persist even when navigating to internal pages without UTM parameters!
+
+#### Step-by-Step Demo:
+
+1. **Initial Visit with UTM Parameters**
+   - Visit: `http://localhost:5173/?utm_source=zkgi-top-nav&utm_medium=top-nav&utm_campaign=Car-Secure&utm_term=Car&IntermediaryCode=4170830000&LeadGenerator=ZurichKotak&IsZKApp=1`
+   - The app captures and stores all UTM parameters in localStorage
+   - You'll see the parameters displayed in the "Captured UTM Parameters" section
+
+2. **Navigate to Internal Pages**
+   - Click "Go to Home (Clean URL)" → URL becomes `http://localhost:5173/`
+   - Click "Go to About Page" → URL becomes `http://localhost:5173/?page=about`
+   - Click "Go to Contact Page" → URL becomes `http://localhost:5173/?page=contact`
+
+3. **Observe Persistence**
+   - Notice the URL no longer has UTM parameters
+   - BUT the "Captured UTM Parameters" section still shows all the original data
+   - The page header shows which page you're on (Home/About/Contact)
+   - UTM data is retrieved from localStorage, not the URL
+
+4. **Submit Form**
+   - Fill out the form on any page
+   - Submit it
+   - Check console - the submission includes both form data AND the original UTM parameters
+   - This works even though the current URL has no UTM parameters!
+
+5. **Why This Matters for Marketing**
+   - Users can navigate freely through your site
+   - URLs stay clean (no UTM clutter on every page)
+   - Original marketing attribution is preserved throughout the entire journey
+   - Form submissions always include the source campaign data
+   - Perfect for tracking lead generation and conversion funnels
+
+#### Clear and Reset
+- Use the "Clear Stored Data" button to remove all stored UTM parameters and submissions
+- This redirects to a clean URL without any parameters
+
 ## LocalStorage Structure
 
 ### utmParams

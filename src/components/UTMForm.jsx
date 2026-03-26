@@ -48,14 +48,37 @@ const UTMForm = ({ utmParams }) => {
   };
 
   const clearUTMParams = () => {
+    // Clear localStorage
     localStorage.removeItem('utmParams');
     localStorage.removeItem('formSubmissions');
+    
+    // Clear URL parameters by redirecting to clean URL
+    const baseUrl = window.location.origin + window.location.pathname;
+    
     alert('UTM parameters and submissions cleared from localStorage!');
-    window.location.reload();
+    
+    // Redirect to clean URL without query parameters
+    window.location.href = baseUrl;
   };
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Info Banner */}
+      <div className="mb-4 p-3 sm:p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border-l-4 border-yellow-400 shadow-sm">
+        <div className="flex items-start gap-2">
+          <span className="text-xl sm:text-2xl">💡</span>
+          <div className="flex-1">
+            <h3 className="text-sm sm:text-base font-semibold text-yellow-800 mb-1">
+              UTM Persistence Demo Active!
+            </h3>
+            <p className="text-xs sm:text-sm text-yellow-700">
+              Notice how UTM parameters stay visible even when you navigate to different pages without UTM in the URL. 
+              They're stored in localStorage for accurate marketing attribution! 🎯
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 md:p-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2 text-center">
           Car Insurance Form
@@ -177,6 +200,47 @@ const UTMForm = ({ utmParams }) => {
             <span className="hidden sm:inline">
               {' '}Try accessing with: <code className="bg-gray-200 px-1 rounded break-all">?utm_source=zkgi-top-nav&utm_medium=top-nav&utm_campaign=Car-Secure&utm_term=Car&IntermediaryCode=4170830000&LeadGenerator=ZurichKotak&IsZKApp=1</code>
             </span>
+          </p>
+        </div>
+
+        {/* Demo Section - UTM Persistence */}
+        <div className="mt-4 p-3 sm:p-4 bg-green-50 rounded-lg border border-green-200">
+          <h3 className="text-sm font-semibold text-green-800 mb-2">
+            🔗 Test UTM Persistence
+          </h3>
+          <p className="text-xs text-gray-700 mb-3">
+            UTM parameters are stored in localStorage. Click the links below to see how they persist even when navigating to different pages!
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-2">
+            <a
+              href="/"
+              className="inline-block px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-medium rounded-lg transition text-center"
+            >
+              Go to Home (Clean URL)
+            </a>
+            <a
+              href="/?page=about"
+              className="inline-block px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-medium rounded-lg transition text-center"
+            >
+              Go to About Page
+            </a>
+            <a
+              href="/?page=contact"
+              className="inline-block px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-medium rounded-lg transition text-center"
+            >
+              Go to Contact Page
+            </a>
+          </div>
+          
+          <div className="mt-3 p-2 bg-white rounded border border-green-300">
+            <p className="text-xs text-gray-600">
+              <strong>Current URL:</strong> <code className="bg-gray-100 px-1 rounded break-all">{window.location.href}</code>
+            </p>
+          </div>
+          
+          <p className="text-xs text-gray-600 mt-2 italic">
+            💡 Notice how UTM parameters remain in the "Captured UTM Parameters" section above, even after clicking these links. They're stored in localStorage!
           </p>
         </div>
       </div>
