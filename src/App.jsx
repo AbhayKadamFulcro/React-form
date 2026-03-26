@@ -6,33 +6,15 @@ function App() {
   const [currentPage, setCurrentPage] = useState('home');
 
   useEffect(() => {
-    // Capture UTM parameters from URL on component mount
-    const urlParams = new URLSearchParams(window.location.search);
-    
     // Get the current page from URL
+    const urlParams = new URLSearchParams(window.location.search);
     const page = urlParams.get('page') || 'home';
     setCurrentPage(page);
     
-    const params = {
-      utm_source: urlParams.get('utm_source') || '',
-      utm_medium: urlParams.get('utm_medium') || '',
-      utm_campaign: urlParams.get('utm_campaign') || '',
-      utm_term: urlParams.get('utm_term') || '',
-      IntermediaryCode: urlParams.get('IntermediaryCode') || '',
-      LeadGenerator: urlParams.get('LeadGenerator') || '',
-      IsZKApp: urlParams.get('IsZKApp') || '',
-    };
-
-    // Store UTM parameters in localStorage
-    if (Object.values(params).some(value => value !== '')) {
-      localStorage.setItem('utmParams', JSON.stringify(params));
-      setUtmParams(params);
-    } else {
-      // Try to load from localStorage if no URL params
-      const stored = localStorage.getItem('utmParams');
-      if (stored) {
-        setUtmParams(JSON.parse(stored));
-      }
+    // Only load UTM parameters from localStorage (don't capture from URL)
+    const stored = localStorage.getItem('utmParams');
+    if (stored) {
+      setUtmParams(JSON.parse(stored));
     }
   }, []);
 

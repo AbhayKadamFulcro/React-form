@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const UTMForm = ({ utmParams }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +9,36 @@ const UTMForm = ({ utmParams }) => {
   });
 
   const [showUTMData, setShowUTMData] = useState(false);
+  const [localUtmParams, setLocalUtmParams] = useState(utmParams);
+
+  // Update local UTM params when prop changes
+  useEffect(() => {
+    setLocalUtmParams(utmParams);
+  }, [utmParams]);
+
+  const handleCaptureUTM = () => {
+    // Capture UTM parameters from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    const params = {
+      utm_source: urlParams.get('utm_source') || '',
+      utm_medium: urlParams.get('utm_medium') || '',
+      utm_campaign: urlParams.get('utm_campaign') || '',
+      utm_term: urlParams.get('utm_term') || '',
+      IntermediaryCode: urlParams.get('IntermediaryCode') || '',
+      LeadGenerator: urlParams.get('LeadGenerator') || '',
+      IsZKApp: urlParams.get('IsZKApp') || '',
+    };
+
+    // Store UTM parameters in localStorage
+    if (Object.values(params).some(value => value !== '')) {
+      localStorage.setItem('utmParams', JSON.stringify(params));
+      setLocalUtmParams(params);
+      alert('UTM parameters captured successfully!');
+    } else {
+      alert('No UTM parameters found in the current URL.');
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,10 +51,28 @@ const UTMForm = ({ utmParams }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // First, capture UTM parameters from URL if available
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentUtmParams = {
+      utm_source: urlParams.get('utm_source') || localUtmParams.utm_source || '',
+      utm_medium: urlParams.get('utm_medium') || localUtmParams.utm_medium || '',
+      utm_campaign: urlParams.get('utm_campaign') || localUtmParams.utm_campaign || '',
+      utm_term: urlParams.get('utm_term') || localUtmParams.utm_term || '',
+      IntermediaryCode: urlParams.get('IntermediaryCode') || localUtmParams.IntermediaryCode || '',
+      LeadGenerator: urlParams.get('LeadGenerator') || localUtmParams.LeadGenerator || '',
+      IsZKApp: urlParams.get('IsZKApp') || localUtmParams.IsZKApp || '',
+    };
+
+    // Update localStorage with latest UTM params
+    if (Object.values(currentUtmParams).some(value => value !== '')) {
+      localStorage.setItem('utmParams', JSON.stringify(currentUtmParams));
+      setLocalUtmParams(currentUtmParams);
+    }
+    
     // Combine form data with UTM parameters
     const submissionData = {
       ...formData,
-      ...utmParams,
+      ...currentUtmParams,
       timestamp: new Date().toISOString()
     };
 
@@ -36,7 +84,7 @@ const UTMForm = ({ utmParams }) => {
     localStorage.setItem('formSubmissions', JSON.stringify(submissions));
 
     // Show success message
-    alert('Form submitted successfully! Check console for data.');
+    alert('Form submitted successfully! UTM parameters captured. Check console for data.');
     
     // Reset form
     setFormData({
@@ -51,6 +99,17 @@ const UTMForm = ({ utmParams }) => {
     // Clear localStorage
     localStorage.removeItem('utmParams');
     localStorage.removeItem('formSubmissions');
+    
+    // Clear local state
+    setLocalUtmParams({
+      utm_source: '',
+      utm_medium: '',
+      utm_campaign: '',
+      utm_term: '',
+      IntermediaryCode: '',
+      LeadGenerator: '',
+      IsZKApp: '',
+    });
     
     // Clear URL parameters by redirecting to clean URL
     const baseUrl = window.location.origin + window.location.pathname;
@@ -93,17 +152,25 @@ const UTMForm = ({ utmParams }) => {
             <h2 className="text-base sm:text-lg font-semibold text-blue-800">
               Captured UTM Parameters
             </h2>
-            <button
-              onClick={() => setShowUTMData(!showUTMData)}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium self-start sm:self-auto"
-            >
-              {showUTMData ? 'Hide' : 'Show'}
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCaptureUTM}
+                className="text-xs sm:text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-medium transition"
+              >
+                📥 Capture UTM
+              </button>
+              <button
+                onClick={() => setShowUTMData(!showUTMData)}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                {showUTMData ? 'Hide' : 'Show'}
+              </button>
+            </div>
           </div>
           
           {showUTMData && (
             <div className="mt-3 space-y-1 text-xs sm:text-sm">
-              {Object.entries(utmParams).map(([key, value]) => (
+              {Object.entries(localUtmParams).map(([key, value]) => (
                 <div key={key} className="flex flex-col sm:flex-row sm:justify-between py-1 sm:py-1 border-b border-blue-100 gap-1">
                   <span className="font-medium text-gray-700">{key}:</span>
                   <span className="text-gray-600 break-all">{value || 'N/A'}</span>
@@ -196,7 +263,7 @@ const UTMForm = ({ utmParams }) => {
 
         <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-xs text-gray-600">
-            <strong>Note:</strong> UTM parameters are automatically captured from the URL and stored in localStorage.
+            <strong>Note:</strong> UTM parameters are captured when you submit the form. You can also manually capture them using the "📥 Capture UTM" button above.
             <span className="hidden sm:inline">
               {' '}Try accessing with: <code className="bg-gray-200 px-1 rounded break-all">?utm_source=zkgi-top-nav&utm_medium=top-nav&utm_campaign=Car-Secure&utm_term=Car&IntermediaryCode=4170830000&LeadGenerator=ZurichKotak&IsZKApp=1</code>
             </span>
